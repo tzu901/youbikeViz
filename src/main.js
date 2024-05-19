@@ -1,4 +1,4 @@
-const APIKEY = "AAPK682e8d97356f476f9d15d467e7ee861dRBMMknl70tkblVOMElgK1suI9ppIMr7gfDW8CxdHmSDL-0Y-pJfKPufckH9UGhCz";
+const APIKEY = "";
 
 document.addEventListener("DOMContentLoaded", function () {
     require([
