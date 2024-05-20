@@ -75,9 +75,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         function loadData(dataType) {
-            fetch(`./src/data/${dataType}_10m_frequency.json`)
-                .then((response) => response.json())
-                .then((data) => {
+            const dataFiles = [
+                `./data/output_${dataType}_01.json`,
+                `./data/output_${dataType}_02.json`,
+                `./data/output_${dataType}_03.json`,
+                `./data/output_${dataType}_04.json`,
+                `./data/output_${dataType}_05.json`,
+                `./data/output_${dataType}_06.json`,
+                `./data/output_${dataType}_07.json`,
+                `./data/output_${dataType}_08.json`,
+                `./data/output_${dataType}_09.json`,
+                `./data/output_${dataType}_10.json`
+            ];
+
+            Promise.all(dataFiles.map(url => fetch(url).then(response => response.json())))
+                .then(datasets => {
+                    const data = datasets.flat();
+
                     const allGraphics = [];
                     let maxFrequency = threshold;
 
