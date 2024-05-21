@@ -1,19 +1,18 @@
-const APIKEY = "";
-
 document.addEventListener("DOMContentLoaded", function () {
     require([
-        "esri/config",
         "esri/Map",
         "esri/views/SceneView",
         "esri/Graphic",
         "esri/layers/GraphicsLayer",
         "esri/geometry/Polyline",
         "esri/symbols/SimpleLineSymbol",
-    ], function (esriConfig, Map, SceneView, Graphic, GraphicsLayer, Polyline, SimpleLineSymbol) {
-        esriConfig.apiKey = APIKEY;
-
+    ], function (Map, SceneView, Graphic, GraphicsLayer, Polyline, SimpleLineSymbol) {
         var map = new Map({
-            basemap: "arcgis-dark-gray",
+            basemap: {
+                portalItem: {
+                    id: "4f2e99ba65e34bb8af49733d9778fb8e"
+                }
+            }
         });
 
         var view = new SceneView({
@@ -67,14 +66,29 @@ document.addEventListener("DOMContentLoaded", function () {
             return points;
         }
 
-        function getColorByFrequency(frequency, minFrequency, maxFrequency) {
-            const percent = (frequency - minFrequency) / (maxFrequency - minFrequency);
-            const red = 255 * (1 - percent);
-            const green = 255 * percent;
-            return `rgb(${red}, ${green}, 0)`;
+        function getColorByQuantile(frequency, quantiles) {
+            if (frequency <= quantiles[0]) {
+                return 'rgba(255, 255, 0, 0.7)'; // 黃色，透明度 0.7
+            } else if (frequency <= quantiles[1]) {
+                return 'rgba(255, 165, 0, 0.7)'; // 橙色，透明度 0.7
+            } else {
+                return 'rgba(255, 0, 0, 0.7)'; // 紅色，透明度 0.7
+            }
         }
 
-        function loadData(dataType) {
+        function calculateQuantiles(data, quantileCount) {
+            const frequencies = data.map(item => item.frequency).sort((a, b) => a - b);
+            const quantiles = [];
+            for (let i = 1; i < quantileCount; i++) {
+                const position = (frequencies.length - 1) * (i / quantileCount);
+                const base = Math.floor(position);
+                const rest = position - base;
+                quantiles.push(frequencies[base] + rest * (frequencies[base + 1] - frequencies[base]));
+            }
+            return quantiles;
+        }
+
+        function loadData(dataType, threshold) {
             const dataFiles = [
                 `./data/output_${dataType}_01.json`,
                 `./data/output_${dataType}_02.json`,
@@ -92,19 +106,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(datasets => {
                     const data = datasets.flat();
 
+                    const filteredData = data.filter(item => item.frequency > threshold);
+                    const quantiles = calculateQuantiles(filteredData, 3);
+
                     const allGraphics = [];
-                    let maxFrequency = threshold;
 
-                    // Find the maximum frequency
-                    data.forEach(item => {
-                        if (item.frequency > maxFrequency) {
-                            maxFrequency = item.frequency;
-                        }
-                    });
-
-                    data.forEach(function (item) {
+                    filteredData.forEach(function (item) {
                         if (
-                            item.frequency > threshold && // Use the threshold
                             item.rent_lon &&
                             item.rent_lat &&
                             item.end_lon &&
@@ -131,10 +139,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                 paths: [arcPoints],
                             });
 
-                            var lineColor = getColorByFrequency(item.frequency, threshold, maxFrequency);
+                            var lineColor = getColorByQuantile(item.frequency, quantiles);
                             var lineSymbol = new SimpleLineSymbol({
                                 color: lineColor,
-                                width: 1,
+                                width: 5,
+                                ocacity: 0.7
                             });
 
                             var lineGraphic = new Graphic({
@@ -170,16 +179,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 .catch((error) => console.error("Error loading the data:", error));
         }
 
-        loadData("weekend");
+        loadData("weekday", threshold);
 
         document.getElementById("dataSelect").addEventListener("change", function (event) {
-            loadData(event.target.value);
+            loadData(event.target.value, threshold);
         });
 
         document.getElementById("thresholdSlider").addEventListener("input", function (event) {
             threshold = parseInt(event.target.value);
             document.getElementById("thresholdValue").innerText = threshold;
-            loadData(document.getElementById("dataSelect").value);
+            loadData(document.getElementById("dataSelect").value, threshold);
         });
     });
 });

@@ -6,6 +6,7 @@ body {
     align-items: center;
     height: 100vh;
     overflow: hidden;
+    font-family: Arial, sans-serif;
 }
 
 #container {
@@ -18,10 +19,31 @@ body {
     position: absolute;
     top: 15px;
     left: 60px;
-    background-color: rgba(255, 255, 255, 0.71);
-    padding: 10px;
-    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 15px; /* Add padding for better spacing */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+}
+
+#controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#controls select,
+#controls input {
+    width: calc(100% - 20px); /* Adjust width to fit inside padding */
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#thresholdSlider {
+    width: calc(100% - 20px); /* Adjust width to fit inside padding */
+    margin: 0;
 }
 
 #viewDiv {
@@ -33,16 +55,22 @@ body {
     position: absolute;
     bottom: 30px;
     left: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.85);
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+}
+
+#legend p {
+    margin: 0 0 10px;
+    font-weight: bold;
 }
 
 .legend-color {
     width: 20px;
     height: 20px;
-    padding: 5px;
+    margin-right: 10px;
+    border-radius: 3px;
     display: inline-block;
 }
-
