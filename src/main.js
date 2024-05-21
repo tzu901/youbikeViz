@@ -6,14 +6,23 @@ document.addEventListener("DOMContentLoaded", function () {
         "esri/layers/GraphicsLayer",
         "esri/geometry/Polyline",
         "esri/symbols/SimpleLineSymbol",
-    ], function (Map, SceneView, Graphic, GraphicsLayer, Polyline, SimpleLineSymbol) {
+        "esri/layers/SceneLayer"
+    ], function (Map, SceneView, Graphic, GraphicsLayer, Polyline, SimpleLineSymbol,SceneLayer) {
+
+        const 台北市 = new SceneLayer({
+            url: "https://www.historygis.udd.gov.taipei/arcgis/rest/services/Hosted/LOD1_2021/SceneServer",
+            title: "臺北市",
+          });
+            
         var map = new Map({
             basemap: {
                 portalItem: {
                     id: "4f2e99ba65e34bb8af49733d9778fb8e"
                 }
-            }
+            },
         });
+        map.add(台北市);
+        
 
         var view = new SceneView({
             container: "viewDiv",
