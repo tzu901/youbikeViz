@@ -31,7 +31,7 @@ This project visualizes YouBike rental data using ArcGIS API for JavaScript. The
 3. Open index.html in your preferred web browser to view the visualization.
 
 ## Result
-https://tzu901.github.io/youbikeViz.
+https://tzu901.github.io/src/youbikeViz.
 
 ## Credits
 ArcGIS API for JavaScript
